@@ -1,0 +1,30 @@
+﻿<Window x:Class="oradev.MacroVew"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Macro" Height="230" Width="450" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock>Key (press to assign):</TextBlock>
+            <TextBox Name="txtKey" IsReadOnly="True" KeyUp="Key_KeyUp"/>
+            <TextBlock/>
+            <WrapPanel Orientation="Horizontal">
+                <TextBlock>Modifiers:</TextBlock>
+                <CheckBox Name="cbControl" Margin="30 0">Control</CheckBox>
+                <CheckBox Name="cbShift" Margin="30 0">Shift</CheckBox>
+            </WrapPanel>
+            <TextBlock/>
+            <CheckBox Name="cbEOL">Go to end of line before insert</CheckBox>
+            <TextBlock/>
+            <TextBlock>Insert text:</TextBlock>
+            <TextBox Name="txtText" MaxLines="1"/>
+        </StackPanel>
+        <WrapPanel Grid.Row="1" HorizontalAlignment="Center">
+            <Button Margin="5" Padding="20 0" IsDefault="True" Click="Save_Click">Save</Button>
+            <Button Margin="5" Padding="20 0" IsCancel="True">Cancel</Button>
+        </WrapPanel>
+    </Grid>
+</Window>

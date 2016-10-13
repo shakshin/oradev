@@ -1,0 +1,78 @@
+﻿<Window x:Class="oradev.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Settings" Height="357" Width="540" ResizeMode="NoResize" WindowStyle="ToolWindow" Name="wnd" WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <Grid VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Header="Oracle">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock>Database connections:</TextBlock>
+                        <ListBox Height="200" Name="dblist">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DataBaseName}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <WrapPanel HorizontalAlignment="Center" Margin="5">
+                            <Button Width="80" Click="Add_Click">Add</Button>
+                            <TextBlock Width="20"/>
+                            <Button Width="80" Click="Remove_Click">Remove</Button>
+                        </WrapPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="10 5">
+                        <TextBlock>Database display name:</TextBlock>
+                        <TextBox Text="{Binding Path=SelectedItem.DataBaseName, ElementName=dblist, Mode=TwoWay}" />
+                        <TextBlock/>
+                        <TextBlock>Database alias (TNSNames):</TextBlock>
+                        <TextBox Text="{Binding Path=SelectedItem.DataBaseAlias, ElementName=dblist, Mode=TwoWay}"/>
+                        <TextBlock/>
+                        <TextBlock>Database user name:</TextBlock>
+                        <TextBox  Text="{Binding Path=SelectedItem.DataBaseUser, ElementName=dblist, Mode=TwoWay}"/>
+                        <TextBlock/>
+                        <TextBlock>Database password:</TextBlock>
+                        <TextBox  Text="{Binding Path=SelectedItem.DataBasePassword, ElementName=dblist, Mode=TwoWay}"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="File">
+                <StackPanel Margin="5">
+                    <TextBlock>Default encoding:</TextBlock>
+                    <ComboBox Name="cmbEnc">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBlock/>
+                    <CheckBox IsChecked="{Binding Path=cfg.SaveOnCompile, Mode=TwoWay, ElementName=wnd}">Save file before compile</CheckBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Objects cache" >
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <CheckBox IsChecked="{Binding Path=cfg.UseObjectCache, Mode=TwoWay, ElementName=wnd}">Enable Objects Cache feature (required for some code ompletion features)</CheckBox>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Cache item expiration period (hours): </TextBlock>
+                        <TextBlock Width="10"></TextBlock>
+                        <Slider Minimum="1" Maximum="240" Value="{Binding Path=cfg.CacheExpirePeriod, Mode=TwoWay, ElementName=wnd}" Width="200" />
+                        <TextBlock Width="10"></TextBlock>
+                        <TextBlock Text="{Binding Path=cfg.CacheExpirePeriod, Mode=TwoWay, ElementName=wnd}"/>
+                    </StackPanel>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        <WrapPanel  Margin="5" Grid.Row="1" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Width="100" Click="Save_Click" IsDefault="True">Save</Button>
+        </WrapPanel>
+    </Grid>
+</Window>

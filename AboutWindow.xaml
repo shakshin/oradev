@@ -1,0 +1,28 @@
+﻿<Window x:Class="oradev.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="About" Height="230" Width="300" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" WindowStyle="ToolWindow">
+    <StackPanel Margin="5">
+        <StackPanel Orientation="Horizontal">
+            <Image Source="icon.ico" Margin="10"/>            
+            <TextBlock FontSize="20" FontWeight="Bold" Margin="10">C+ Oracle Developer</TextBlock>
+        </StackPanel>
+        <TextBlock>
+            Original code by Sergey V. Shakshin
+        </TextBlock>
+        <TextBlock>
+            Oracle unwrapper code by Alexander S. Taschilin
+        </TextBlock>
+        <TextBlock>
+            Compass Plus Ltd. 2016
+        </TextBlock>
+        <TextBlock/>
+        <TextBlock>
+            Powered by ICSharpCode AvalonEdit
+        </TextBlock>
+        <TextBlock/>
+        <Button IsDefault="True" HorizontalAlignment="Center" Width="50" Click="Button_Click">
+            Ok
+        </Button>
+    </StackPanel>
+</Window>

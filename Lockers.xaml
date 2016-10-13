@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="oradev.Lockers"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="1000">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FFC9C6C6" Opacity="0.2"/>
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <StackPanel  VerticalAlignment="Center" HorizontalAlignment="Center" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+                <Border BorderThickness="1" BorderBrush="Black" >
+                <StackPanel Margin="10">
+                    <TextBlock>Package is being used by:</TextBlock>
+                        <ListView Grid.Row="0" Margin="5" Name="lstSessions" Height="100">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding Id}"/>
+                                    <GridViewColumn Header="USER" Width="340" DisplayMemberBinding="{Binding User}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5" HorizontalAlignment="Center">
+                        <Button Margin="10 0" Padding="10 0" Click="ButtonKill_Click">Kill selected session</Button>
+                        <Button Margin="10 0" Padding="10 0" Click="ButtonKillAll_Click">Kill 'em all!</Button>
+                        <Button Margin="10 0" Padding="10 0" Click="ButtonCancel_Click">Cancel</Button>
+                    </StackPanel>
+                </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </Grid>
+    <!--
+    <Grid VerticalAlignment="Stretch">
+        <StackPanel  VerticalAlignment="Center" HorizontalAlignment="Center" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+            <TextBlock>Package is being used by:</TextBlock>
+            <ListView Grid.Row="0" Margin="5" Name="lstSessions" Height="100">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding Id}"/>
+                        <GridViewColumn Header="USER" Width="340" DisplayMemberBinding="{Binding User}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </StackPanel>
+    </Grid>
+-->
+</UserControl>

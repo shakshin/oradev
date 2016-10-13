@@ -1,0 +1,13 @@
+﻿<Window x:Class="oradev.GoToWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Go to line" Height="90" Width="300" WindowStyle="ToolWindow" WindowStartupLocation="CenterOwner" KeyUp="Window_KeyUp" ShowInTaskbar="False">
+    <StackPanel Margin="5" >
+        <TextBlock>Go to line number:</TextBlock>
+        <WrapPanel>
+            <TextBox Name="line" Width="200" PreviewTextInput="line_PreviewTextInput"></TextBox>
+            <TextBlock Width="10"/>
+            <Button Padding="20 0" IsDefault="True" Click="ButtonGo_Click">Go</Button>
+        </WrapPanel>
+    </StackPanel>
+</Window>
