@@ -1,32 +1,30 @@
 # C+ Oracle Developer
-Среда для разработки кода на PL/SQL
-Автор: Сергей Шакшин
+IDE for PL/SQL code development
 
-Требования:
+Requirements:
 .Net Framework v4.0
 
-Функции:
-- Возможность открывать и сохранять файлы в различных кодировках (Windows-1251, CP866, UTF8)
-- Раскраска кода по синтаксису
-- Стандартный набор инструментов рабоыт с текстом: Undo, Redo, поиск, замена
-- Выделение прямоугольного блока текста
-- Мониторинг внешних изменений в открытых файлах: открытый файл был изменен другим приложением, удален, переименован
-- Среда работает в режиме одного экземпляра: при повторном запуске файлы откроются в уже запущенном экземпляре среды
+Main functionality:
+- Multiple encodings support for open and save operations
+- Syntax highlighting (powered by AvalonEdit)
+- Standart set of tex-editing tools: Undo, Redo, Search, Replace etc.
+- Rectangular block selection
+- Monitor external changes in open files: file was changes, deleted or renamed by another application
+- Single instance mode: all files opened in one window
 
-- Выполнение SQL запросов в БД с выводом результата в табличном виде
-- Сборка плана исполнения SQL-запроса с выводом в таблично-иерархическом виде
-- Возможность скопировать ррезультаты запроса с заголовками или без для вставки в другом текстовом редакторе
-- Выполнение PL/SQL-скриптов
-- Компиляция пакетов с выводом ошибок и навигацией по ним
+- Execute SQL queries and show result in table view
+- Explain plan of queries
+- Copy results of query in justified table format
+- Execute PL/SQL scripts
+- Compile PL/SQL packages, show erros if any and navigate to corresponding lines
 
-- Навигация по элементам исходного кода (процедуры, функции, курсоры)
-- Навигация по объектам в БД (пакеты, таблицы) с возможностью открыть на редактирование код пакета или скрипт создания таблицы из БД
+- Navigate through source code elements (procedures, functions, cursors)
+- Navigate through DB objects (packages, tables) and open sources for editing
 
-- Большинство операций с БД происходит в отдельных потоках, поэтому длительные операции не блокируют работы среды
-- Возможность работы с несколькими БД одновременно
-- Среда не держит соединение с БД, а открывает подключения по мере надобности и закрывает после завершения выполнения команды
+- Almost all database operations are implemented as separate thread tasks to  avoid IDE blocks while long-time database operations performing
+- Multiple database connections supported
+- IDE does not hold permanent database connections. Connections opened when it's required and closed when operation s complete
 
-- KILLER FEATURE!!! Перед отправкой пакета на компиляцию среда проверяет, кто занимает данный ресурс, отображает окно со списком блокирующих сессий с возможностью убить сессии, как по одной, так и массово
+- KILLER FEATURE!!! IDE checks if any session is locking package you going to compile, shows you list of such sesions and allow you to kill this session(s)
 
-- Пользовательские текстовые макросы с привязкой к комбинации клавиш
 
