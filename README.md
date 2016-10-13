@@ -18,7 +18,7 @@ Main functionality:
 - Execute PL/SQL scripts
 - Compile PL/SQL packages, show erros if any and navigate to corresponding lines
 
-- Navigate through source code elements (procedures, functions, cursors)
+- Navigate through source code elements (procedures, functions, cursors) (ctags.exe binary is required to be located in your PATH)
 - Navigate through DB objects (packages, tables) and open sources for editing
 
 - Almost all database operations are implemented as separate thread tasks to  avoid IDE blocks while long-time database operations performing
