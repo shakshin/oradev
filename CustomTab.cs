@@ -81,7 +81,7 @@ namespace oradev
                 stream.Write(code);
                 stream.Close();
 
-                ProcessStartInfo cmd = new ProcessStartInfo("ctags.exe");
+                ProcessStartInfo cmd = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ctags.exe"));
                 cmd.CreateNoWindow = true;
                 cmd.UseShellExecute = false;
                 cmd.RedirectStandardOutput = true;
