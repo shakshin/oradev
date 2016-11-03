@@ -20,7 +20,12 @@ namespace oradev
             return string.Format("Data Source={0};Password={1};User ID={2};Unicode=true", config.DataBaseAlias, config.DataBasePassword, config.DataBaseUser);
         }
 
-        public static void QueryAsync(String text, ProcessQueryResult callback, DataBaseConfig config)
+        public static OracleConnection GetConnection(DataBaseConfig config)
+        {
+            return new OracleConnection(ConnectionString(config));
+        }
+
+        public static void QueryAsync(String text, ProcessQueryResult callback, DataBaseConfig config, OracleConnection existingConnection = null)
         {
             if (config == null)
             {
@@ -32,7 +37,7 @@ namespace oradev
             new Thread(delegate() {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                DataTable result = Query(text, config);
+                DataTable result = Query(text, config, existingConnection);
                 sw.Stop();
                 App.Current.Dispatcher.Invoke((Action)delegate {
                     callback(result, sw.ElapsedMilliseconds);
@@ -40,87 +45,92 @@ namespace oradev
             }).Start();
         }
         
-        private static DataTable Query(String text, DataBaseConfig config)
+        public static DataTable Query(String text, DataBaseConfig config, OracleConnection existingConnection = null, OracleTransaction tran = null)
         {
             int Counter = 0;
 
             DataTable result = new DataTable();
-            if (config == null) return result;
+            if (config == null && existingConnection == null) return result;
+            OracleConnection oracle = existingConnection == null
+                    ? new OracleConnection(ConnectionString(config))
+                    : existingConnection;
             try
             {
-                using (OracleConnection oracle = new OracleConnection(ConnectionString(config)))
+                if (oracle.State != ConnectionState.Open) oracle.Open();
+                using (OracleCommand command = new OracleCommand())
                 {
-                    oracle.Open();
-                    using (OracleCommand command = new OracleCommand())
+                    command.Connection = oracle;
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandText = text;
+                    if (tran != null) command.Transaction = tran;
+
+                    OracleDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
                     {
-                        command.Connection = oracle;
-                        command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = text;
-
-                        OracleDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            if (reader.FieldCount > result.Columns.Count)
                             {
-                                if (reader.FieldCount > result.Columns.Count)
+                                for (int i = result.Columns.Count; i < reader.FieldCount; i++)
                                 {
-                                    for (int i = result.Columns.Count; i < reader.FieldCount; i++)
-                                    {
-                                        result.Columns.Add(reader.GetName(i));
-                                        
-                                    }
-                                }
+                                    result.Columns.Add(reader.GetName(i));
 
-                                DataRow row = result.NewRow();
-                                for (int i = 0; i < reader.FieldCount; i++ )
-                                {
-                                    if (!reader.IsDBNull(i))
-                                    {
-                                        Type type = reader.GetFieldType(i);
-                                        switch (type.Name)
-                                        {
-                                            case "Decimal":
-                                                Decimal d = reader.GetDecimal(i);
-                                                row[result.Columns[i]] = d.ToString();
-                                                break;
-                                            case "String":
-                                                String s = reader.GetString(i);
-                                                row[result.Columns[i]] = s;
-                                                break;
-                                            case "DateTime":
-                                                DateTime dt = reader.GetDateTime(i);
-                                                row[result.Columns[i]] = dt.ToString();
-                                                break;
-                                            default:
-                                                row[result.Columns[i]] = "{" + type.Name + "}";
-                                                break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        row[result.Columns[i]] = "{null}";
-                                    }
                                 }
+                            }
 
-                                result.Rows.Add(row);
-                                Counter++;
-                                if (Counter == 10000)
+                            DataRow row = result.NewRow();
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                if (!reader.IsDBNull(i))
                                 {
-                                    //Console.Log("WARNING: query output limited to 10000 rows");
-                                    break;
+                                    Type type = reader.GetFieldType(i);
+                                    switch (type.Name)
+                                    {
+                                        case "Decimal":
+                                            Decimal d = reader.GetDecimal(i);
+                                            row[result.Columns[i]] = d.ToString();
+                                            break;
+                                        case "String":
+                                            String s = reader.GetString(i);
+                                            row[result.Columns[i]] = s;
+                                            break;
+                                        case "DateTime":
+                                            DateTime dt = reader.GetDateTime(i);
+                                            row[result.Columns[i]] = dt.ToString();
+                                            break;
+                                        default:
+                                            row[result.Columns[i]] = "{" + type.Name + "}";
+                                            break;
+                                    }
                                 }
+                                else
+                                {
+                                    row[result.Columns[i]] = "{null}";
+                                }
+                            }
+
+                            result.Rows.Add(row);
+                            Counter++;
+                            if (Counter == 10000)
+                            {
+                                //Console.Log("WARNING: query output limited to 10000 rows");
+                                break;
                             }
                         }
                     }
                 }
+
             }
             catch (Exception ex)
             {
                 Console.Log(ex.Message.Replace("\n", " "));
             }
+            finally
+            {
+                if (existingConnection == null) oracle.Dispose();
+            }
             return result;
         }
-
 
         public static void GetPackagesAsync(String query, ProcessGetObjectsResult callback, DataBaseConfig config)
         {
@@ -400,7 +410,7 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
             }
         }
 
-        public static void ExecuteAsync(String text, ProcessExecuteResult callback, DataBaseConfig config)
+        public static void ExecuteAsync(String text, ProcessExecuteResult callback, DataBaseConfig config, OracleConnection existingConnection = null)
         {
             if (config == null)
             {
@@ -410,42 +420,49 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
             new Thread(delegate() {
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                Execute(text, config);
+                Execute(text, config, existingConnection);
                 sw.Stop();
                 App.Current.Dispatcher.Invoke((Action) delegate {
                     callback(sw.ElapsedMilliseconds);
                 });
             }).Start();
         }
-        private static void Execute(String text, DataBaseConfig config)
+        public static void Execute(String text, DataBaseConfig config, OracleConnection existingConnection = null, OracleTransaction tran = null)
         {
             if (config == null) return;
+            OracleConnection oracle = existingConnection == null
+                ? new OracleConnection(ConnectionString(config))
+                : existingConnection;
             try
             {
-                using (OracleConnection oracle = new OracleConnection(ConnectionString(config)))
+                if (oracle.State != ConnectionState.Open) oracle.Open();
+                using (OracleCommand command = new OracleCommand())
                 {
-                    oracle.Open();
-                    using (OracleCommand command = new OracleCommand())
+                    command.Connection = oracle;
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandText = text;
+                    if (tran != null) command.Transaction = tran;
+
+                    int rows = command.ExecuteNonQuery();
+
+                    Console.Log("Execution complete.");
+
+                    if (rows > 0)
                     {
-                        command.Connection = oracle;
-                        command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = text;
-
-                        int rows = command.ExecuteNonQuery();
-
-                        Console.Log("Execution complete.");
-
-                        if (rows > 0)
-                        {
-                            Console.Log(string.Format("{0} rows affected.", rows));
-                        }
+                        Console.Log(string.Format("{0} rows affected.", rows));
                     }
                 }
+
             }
             catch (Exception ex)
             {
                 Console.Log(ex.Message.Replace("\n", " "));
             }
+            finally
+            {
+                if (existingConnection == null) oracle.Dispose();
+            }
+
         }
 
         public static ObservableCollection<SourceError> CheckErrors(String type, String name, DataBaseConfig config) 
@@ -567,7 +584,7 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
             }).Start();
         }
 
-        public static DataTable ExplainPlan(String text, DataBaseConfig config)
+        public static DataTable ExplainPlan(String text, DataBaseConfig config, OracleConnection existingConnection = null)
         {
             DataTable result = new DataTable();
             
@@ -583,93 +600,93 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
             if (config == null) return result;
 
             String stid = DateTime.Now.ToString("o").Replace(":", "").Replace(".", "").Replace("-","");
+            OracleConnection oracle = existingConnection == null
+                ? new OracleConnection(ConnectionString(config))
+                : existingConnection;
             try
             {
-                using (OracleConnection oracle = new OracleConnection(ConnectionString(config)))
+                if (oracle.State != ConnectionState.Open) oracle.Open();
+                using (OracleCommand command = new OracleCommand())
                 {
-                    oracle.Open();
-                    using (OracleCommand command = new OracleCommand())
-                    {
-                        command.Connection = oracle;
-                        command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = string.Format("explain plan set statement_id = '{1}' for {0}", text, stid);
+                    command.Connection = oracle;
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandText = string.Format("explain plan set statement_id = '{1}' for {0}", text, stid);
 
-                        command.ExecuteNonQuery();
-                    }
+                    command.ExecuteNonQuery();
+                }
 
-                    using (OracleCommand command = new OracleCommand())
-                    {
-                        command.Connection = oracle;
-                        command.CommandType = System.Data.CommandType.Text;
-                        command.CommandText = string.Format(@"
+                using (OracleCommand command = new OracleCommand())
+                {
+                    command.Connection = oracle;
+                    command.CommandType = System.Data.CommandType.Text;
+                    command.CommandText = string.Format(@"
                             
-                            SELECT 
-                                level,
-                                operation,
-                                options,
-                                object_type,
-                                object_name,
-                                cost,
-                                cardinality,
-                                bytes,
-                                optimizer
-                            FROM PLAN_TABLE
-                            CONNECT BY prior id = parent_id
-                                AND prior statement_id = statement_id
-                            START WITH id = 0
-                                AND statement_id = '{0}'
-                            ORDER BY id
-                        ", stid);
+                        SELECT 
+                            level,
+                            operation,
+                            options,
+                            object_type,
+                            object_name,
+                            cost,
+                            cardinality,
+                            bytes,
+                            optimizer
+                        FROM PLAN_TABLE
+                        CONNECT BY prior id = parent_id
+                            AND prior statement_id = statement_id
+                        START WITH id = 0
+                            AND statement_id = '{0}'
+                        ORDER BY id
+                    ", stid);
 
-                        OracleDataReader reader = command.ExecuteReader();
-                        if (reader.HasRows)
+                    OracleDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            int level = 1;
+                            DataRow row = result.NewRow();
+                            for (int i = 0; i < reader.FieldCount; i++)
                             {
-                                int level = 1;
-                                DataRow row = result.NewRow();
-                                for (int i = 0; i < reader.FieldCount; i++)
-                                {   
-                                    if (i == 0) 
+                                if (i == 0)
+                                {
+                                    level = Decimal.ToInt32(reader.GetDecimal(0));
+                                    continue;
+                                }
+                                if (!reader.IsDBNull(i))
+                                {
+                                    Type type = reader.GetFieldType(i);
+                                    switch (type.Name)
                                     {
-                                        level = Decimal.ToInt32(reader.GetDecimal(0));
-                                        continue;
-                                    }
-                                    if (!reader.IsDBNull(i))
-                                    {
-                                        Type type = reader.GetFieldType(i);
-                                        switch (type.Name)
-                                        {
-                                            case "Decimal":
-                                                Decimal d = reader.GetDecimal(i);
-                                                row[result.Columns[i-1]] = d.ToString();
-                                                break;
-                                            case "String":
-                                                String s = reader.GetString(i);
-                                                if (i == 1)
-                                                {
-                                                    int pad = s.Length + Decimal.ToInt16(level - 1) * 2;
-                                                    s = s.PadLeft(pad, ' ');
-                                                }
-                                                    
-                                                row[result.Columns[i-1]] = s;
-                                                break;
-                                            case "DateTime":
-                                                DateTime dt = reader.GetDateTime(i);
-                                                row[result.Columns[i-1]] = dt.ToString();
-                                                break;
-                                            default:
-                                                row[result.Columns[i-1]] = "{" + type.Name + "}";
-                                                break;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        row[result.Columns[i-1]] = "{null}";
+                                        case "Decimal":
+                                            Decimal d = reader.GetDecimal(i);
+                                            row[result.Columns[i - 1]] = d.ToString();
+                                            break;
+                                        case "String":
+                                            String s = reader.GetString(i);
+                                            if (i == 1)
+                                            {
+                                                int pad = s.Length + Decimal.ToInt16(level - 1)*2;
+                                                s = s.PadLeft(pad, ' ');
+                                            }
+
+                                            row[result.Columns[i - 1]] = s;
+                                            break;
+                                        case "DateTime":
+                                            DateTime dt = reader.GetDateTime(i);
+                                            row[result.Columns[i - 1]] = dt.ToString();
+                                            break;
+                                        default:
+                                            row[result.Columns[i - 1]] = "{" + type.Name + "}";
+                                            break;
                                     }
                                 }
-                                result.Rows.Add(row);
+                                else
+                                {
+                                    row[result.Columns[i - 1]] = "{null}";
+                                }
                             }
+                            result.Rows.Add(row);
                         }
                     }
                 }
@@ -677,6 +694,10 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
             catch (Exception ex)
             {
                 Console.Log(ex.Message.Replace("\n", " "));
+            }
+            finally
+            {
+                if (existingConnection == null) oracle.Dispose();
             }
             return result;
         }

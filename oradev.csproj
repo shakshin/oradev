@@ -74,6 +74,7 @@
     <Compile Include="AllSessions.xaml.cs">
       <DependentUpon>AllSessions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DBThread.cs" />
     <Compile Include="Folding.cs" />
     <Compile Include="ICSharpCode\ITextMarker.cs" />
     <Compile Include="ICSharpCode\TextMarkerService.cs" />

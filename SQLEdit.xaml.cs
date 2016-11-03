@@ -79,6 +79,8 @@ namespace oradev
 
         private CustomTab _parent;
 
+        private DBThread thread = new DBThread();
+
         public void StartMonitor(string fileName)
         {
             if (fileName != _fileName)
@@ -136,6 +138,11 @@ namespace oradev
             }
         }
 
+        public void StopThread()
+        {
+            thread.Stop();
+        }
+
         public void StopMonitor()
         {
             _fileName = "";
@@ -190,6 +197,15 @@ namespace oradev
 
             txtCode.TextArea.TextView.SnapsToDevicePixels = true;
 
+            dbconfig.SelectionChanged += delegate
+            {
+                if (dbconfig.SelectedItem != null)
+                {
+                    thread.Init(dbconfig.SelectedItem as DataBaseConfig);
+                    thread.Start();
+                }
+            };
+
 
             dbconfig.ItemsSource = (App.Current as App).Configuration.Databases;
             if (db != null)
@@ -200,7 +216,7 @@ namespace oradev
             {
                 dbconfig.SelectedItem = dbconfig.Items[0];
             }
-
+            
 
             _parent = parentElement;
 
@@ -548,7 +564,8 @@ namespace oradev
                 String code = Regex.Replace(txtCode.Text.Trim(), @"end;\s*/\s+.*$", "end;", RegexOptions.IgnoreCase | RegexOptions.Singleline);
 
                 Pending = true;
-                Oracle.ExecuteAsync(code, delegate(long elapsed)
+                thread.Execute(code, /*);
+                Oracle.ExecuteAsync(code,*/ delegate(DataTable result, long elapsed)
                 {
                     Pending = false;
                     Console.Log(string.Format("Execution time: {0} ms", elapsed));
@@ -578,17 +595,18 @@ namespace oradev
                         _parent.MarkComplete();
                         Console.Log("No errors.");
                     }
-                }, dbconfig.SelectedItem as DataBaseConfig);
+                } /*, dbconfig.SelectedItem as DataBaseConfig */);
             }
             else
             {
                 Pending = true;
-                Oracle.ExecuteAsync(txtCode.Text, delegate(long elapsed)
+                thread.Execute(/*
+                Oracle.ExecuteAsync(*/txtCode.Text, delegate(DataTable result, long elapsed)
                 {
                     Pending = false;
                     _parent.MarkComplete();
                     Console.Log(string.Format("Execution time: {0} ms", elapsed));
-                }, dbconfig.SelectedItem as DataBaseConfig);
+                }/*, dbconfig.SelectedItem as DataBaseConfig*/);
             }
         }
 
@@ -632,7 +650,8 @@ namespace oradev
             {
                 code = Regex.Replace(code, ";$", "");
                 Pending = true;
-                Oracle.QueryAsync(code, delegate(DataTable result, long elapsed) {
+                thread.Query(/*
+                Oracle.QueryAsync(*/code, delegate(DataTable result, long elapsed) {
                     Pending = false;
                     Console.Log(string.Format("Execution time: {0} ms", elapsed));
 
@@ -651,16 +670,17 @@ namespace oradev
                         Console.Log("No rows selected");
                     }
                     _parent.MarkComplete();
-                }, dbconfig.SelectedItem as DataBaseConfig);
+                }/*, dbconfig.SelectedItem as DataBaseConfig*/);
             }
             else
             {
                 Pending = true;
-                Oracle.ExecuteAsync(code, delegate(long elapsed)
+                thread.Query(/*
+                Oracle.ExecuteAsync(*/code, delegate(DataTable result, long elapsed)
                 {
                     Pending = false;
                     Console.Log(string.Format("Execution time: {0} ms", elapsed));
-                }, dbconfig.SelectedItem as DataBaseConfig);
+                }/*, dbconfig.SelectedItem as DataBaseConfig*/);
             }
         }
 
@@ -1282,6 +1302,22 @@ namespace oradev
                     ShowBasicSuggestion(i + 1);
                 }
             }
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            thread.Stop();
+            thread.Start();
+        }
+
+        private void Commit_Click(object sender, RoutedEventArgs e)
+        {
+            thread.Commit();
+        }
+
+        private void Rollback_Click(object sender, RoutedEventArgs e)
+        {
+            thread.Rollback();
         }
     }
 }

@@ -208,6 +208,7 @@ namespace oradev
                     foreach (CustomTab tab in e.OldItems)
                     {
                         (tab.Content as SQLEdit).StopMonitor();
+                        (tab.Content as SQLEdit).StopThread();
                         if ((tab.Content as SQLEdit).ctlLockers.timer != null) (tab.Content as SQLEdit).ctlLockers.timer.Stop();
                     }
                 }
@@ -523,8 +524,13 @@ namespace oradev
             if (!CloseAll())
             {
                 e.Cancel = true;
+                return;
             }
             (App.Current as App).Cache.StopWorker();
+            foreach (CustomTab tab in tabs)
+            {
+                (tab.Content as SQLEdit).StopThread();
+            }
         }
 
         private void MenuExecSelected_Click(object sender, RoutedEventArgs e)

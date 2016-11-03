@@ -58,8 +58,18 @@ namespace oradev
                 };
 
                 Messages.Add(msg);
-                (App.Current.MainWindow as MainWindow).lstConsole.SelectedItem = msg;
-                (App.Current.MainWindow as MainWindow).lstConsole.ScrollIntoView((App.Current.MainWindow as MainWindow).lstConsole.SelectedItem);
+                try
+                {
+                    (App.Current.MainWindow as MainWindow).lstConsole
+                        .SelectedItem = msg;
+                    (App.Current.MainWindow as MainWindow).lstConsole
+                        .ScrollIntoView(
+                            (App.Current.MainWindow as MainWindow)
+                                .lstConsole.SelectedItem);
+                }
+                catch (Exception)
+                {
+                }
             });
         }
     }

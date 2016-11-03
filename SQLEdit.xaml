@@ -23,6 +23,9 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
+            <Button Margin="10, 0, 0 ,0" Padding="10, 0" Click="Reset_Click">Reset session</Button>
+            <Button Margin="10, 0, 0, 0" Padding="10, 0" Click="Commit_Click">Commit</Button>
+            <Button Margin="10, 0, 0, 0" Padding="10, 0" Click="Rollback_Click">Rollback</Button>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
