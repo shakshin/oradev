@@ -132,7 +132,7 @@ namespace oradev
             return result;
         }
 
-        public static void GetPackagesAsync(String query, ProcessGetObjectsResult callback, DataBaseConfig config)
+        public static void GetPackagesAsync(String query, ProcessGetObjectsResult callback, DataBaseConfig config, Boolean invalidOnly = false)
         {
             if (config == null)
             {
@@ -140,7 +140,7 @@ namespace oradev
                 return;
             }
             String sql = "";
-
+            
             if (string.IsNullOrEmpty(query))
             {
                 sql = @"
@@ -165,6 +165,12 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
                 ObservableCollection<DBObject> res = new ObservableCollection<DBObject>();
                 for (int row = 0; row < result.Rows.Count; row++)
                 {
+                    if (
+                        invalidOnly &&
+                        result.Rows[row][2].ToString() != "1" &&
+                        result.Rows[row][3].ToString() != "1"
+                      ) continue;
+
                     res.Add(new DBObject() {
                         Name = result.Rows[row][0].ToString(),
                         Type = result.Rows[row][1].ToString(),

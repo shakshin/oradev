@@ -148,7 +148,7 @@ namespace oradev
                     lstPackages.ItemsSource = result;
                     pk = result;
                     if (tb != null) finish();
-                }, dbselect.SelectedItem as DataBaseConfig);
+                }, dbselect.SelectedItem as DataBaseConfig, cbInvalidOnly.IsChecked == true);
 
                 Oracle.GetTablesAsync(objsearch.Text.Trim().ToUpper(), delegate (ObservableCollection<DBObject> result) {
                     lstTables.ItemsSource = result;
@@ -662,6 +662,11 @@ namespace oradev
             }
 
             this.Cursor = Cursors.Arrow;
+        }
+
+        private void cbInvalidOnly_Checked(object sender, RoutedEventArgs e)
+        {
+            ObjectsSearch();
         }
     }
 }

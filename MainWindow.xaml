@@ -104,6 +104,7 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                         <TextBox MaxLines="1" Name="objsearch" KeyUp="objsearch_KeyUp"/>
+                        <CheckBox Name="cbInvalidOnly" Checked="cbInvalidOnly_Checked" Unchecked="cbInvalidOnly_Checked">Invalid packages only</CheckBox>
                     </StackPanel>
                     <TreeView Grid.Row="1" Name="objtree" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" MouseDoubleClick="objtree_MouseDoubleClick"> 
                         <TreeView.Resources>
