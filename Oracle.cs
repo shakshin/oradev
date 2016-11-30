@@ -39,9 +39,18 @@ namespace oradev
                 sw.Start();
                 DataTable result = Query(text, config, existingConnection);
                 sw.Stop();
-                App.Current.Dispatcher.Invoke((Action)delegate {
-                    callback(result, sw.ElapsedMilliseconds);
-                });
+                try
+                {
+                    App.Current.Dispatcher.Invoke((Action)delegate
+                    {
+                        try
+                        {
+                            callback(result, sw.ElapsedMilliseconds);
+                        }
+                        catch (Exception) { }
+                    });
+                }
+                catch (Exception) { }
             }).Start();
         }
         

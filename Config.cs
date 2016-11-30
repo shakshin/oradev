@@ -94,6 +94,7 @@ namespace oradev
             }
         }
 
+
         public Config()
         {
             Databases = new ObservableCollection<DataBaseConfig>();
@@ -120,15 +121,19 @@ namespace oradev
                     {
                         if (db.Guid == null) db.Guid = Guid.NewGuid().ToString();
                     }
+
+
                     inst.SaveToFile();
 
                     return inst;
                 }
-                return new Config(); ;
+                Config cfg = new Config();
+                return cfg;
             }
             catch (Exception )
             {
-                return new Config();
+                Config inst = new Config();
+                return inst;
             }
         }
 

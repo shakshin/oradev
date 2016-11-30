@@ -50,27 +50,29 @@ namespace oradev
 
         public static void Log(string text)
         {
-            App.Current.Dispatcher.Invoke((Action) delegate {
-                _cnt++;
-                ConsoleMessage msg = new ConsoleMessage() {
-                    Id = _cnt,
-                    Text = text
-                };
+            try {
+                App.Current.Dispatcher.Invoke((Action)delegate {
+                    _cnt++;
+                    ConsoleMessage msg = new ConsoleMessage() {
+                        Id = _cnt,
+                        Text = text
+                    };
 
-                Messages.Add(msg);
-                try
-                {
-                    (App.Current.MainWindow as MainWindow).lstConsole
-                        .SelectedItem = msg;
-                    (App.Current.MainWindow as MainWindow).lstConsole
-                        .ScrollIntoView(
-                            (App.Current.MainWindow as MainWindow)
-                                .lstConsole.SelectedItem);
-                }
-                catch (Exception)
-                {
-                }
-            });
+                    Messages.Add(msg);
+                    try
+                    {
+                        (App.Current.MainWindow as MainWindow).lstConsole
+                            .SelectedItem = msg;
+                        (App.Current.MainWindow as MainWindow).lstConsole
+                            .ScrollIntoView(
+                                (App.Current.MainWindow as MainWindow)
+                                    .lstConsole.SelectedItem);
+                    }
+                    catch (Exception)
+                    {
+                    }
+                });
+            } catch (Exception) { }
         }
     }
 }

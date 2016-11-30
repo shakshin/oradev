@@ -127,7 +127,6 @@ namespace oradev
                 _tabs.SelectedItem = newTab;
                 (newTab.Content as SQLEdit).txtCode.Focus();
             }
-            
             return newTab;
         }
 

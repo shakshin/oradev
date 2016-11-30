@@ -4,6 +4,9 @@
   
   <Color name="String" foreground="Green" />
   <Color name="Comment" foreground="DarkGray" fontStyle="italic" />
+  <Color name="Number" foreground="Brown" />
+  <Color name="Keyword" foreground="Blue" />
+  
   <!-- This is the main ruleset. -->
   <RuleSet ignoreCase="true">
 
@@ -21,8 +24,7 @@
       <End>'</End>
     </Span> 
     
-    <!-- Digits -->
-    <Rule foreground="Brown">
+    <Rule color="Number">
       \b0[xX][0-9a-fA-F]+  # hex number
       |    \b
       (    \d+(\.[0-9]+)?   #number with optional floating point
@@ -31,7 +33,7 @@
       ([eE][+-]?[0-9]+)? # optional exponent
     </Rule>
 
-    <Keywords fontWeight="bold" foreground="Blue">
+    <Keywords color="Keyword">
       <Word>$$PLSQL_LINE</Word>
       <Word>$$PLSQL_UNIT</Word>
       <Word>$ELSE</Word>

@@ -81,7 +81,5 @@ namespace oradev
                 cfg.Databases.Remove(dblist.SelectedItem as DataBaseConfig);
             }
         }
-
-
     }
 }

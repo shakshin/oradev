@@ -144,12 +144,15 @@ namespace oradev
                 {
                     try
                     {
-                        Console.Log("Session reset complete");
                         if (task != null && task.Callback != null)
                             App.Current.Dispatcher.Invoke((Action) delegate
                             {
-                                task.Callback(new DataTable(),
-                                    0);
+                                try
+                                {
+                                    task.Callback(new DataTable(),
+                                        0);
+                                }
+                                catch (Exception) { }
                             });
                     }
                     catch (Exception)

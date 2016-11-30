@@ -225,7 +225,9 @@ namespace oradev
 
             IHighlightingDefinition def = HighlightingLoader.Load(reader, HighlightingManager.Instance);
 
-            txtCode.SyntaxHighlighting = def;           
+            txtCode.SyntaxHighlighting = def;
+            //txtCode.SyntaxHighlighting.GetNamedColor("Keyword").Foreground = new SimpleHighlightingBrush(Colors.Green);
+
 
             StreamReader kwreader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("oradev.keywords.txt"));
             while (!kwreader.EndOfStream)
@@ -728,6 +730,7 @@ namespace oradev
                 data.Add(new CompletionData(tag.Name, tag.Type + " " + tag.Name));
             }
 
+            if (dbconfig.Items.Count > 0)
             foreach (DBObject obj in (dbconfig.SelectedItem as DataBaseConfig).objs)
             {
                 if (preEntered != null && !Regex.IsMatch(obj.Name, @"^" + preEntered, RegexOptions.IgnoreCase)) continue;
