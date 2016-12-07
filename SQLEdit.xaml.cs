@@ -617,6 +617,7 @@ namespace oradev
             if (line == 1) return 0;
             if (line > txtCode.LineCount || line < 1) return -1;
             MatchCollection matches = Regex.Matches(txtCode.Text, "\n");
+            //if (line > matches.Count) return 0;
             return matches[line - 2].Index + 1;
         }
 
@@ -625,6 +626,7 @@ namespace oradev
             if (line == txtCode.LineCount - 1) return txtCode.Text.Length;
             if (line > txtCode.LineCount || line < 1) return -1;
             MatchCollection matches = Regex.Matches(txtCode.Text, "\n");
+            if (line >= matches.Count) return txtCode.Text.Length;
             return matches[line - 1].Index ;
         }
 

@@ -427,7 +427,7 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
 
         public static void ExecuteAsync(String text, ProcessExecuteResult callback, DataBaseConfig config, OracleConnection existingConnection = null)
         {
-            if (config == null)
+            if (config == null && existingConnection == null)
             {
                 callback(0);
                 return;
@@ -444,7 +444,7 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
         }
         public static void Execute(String text, DataBaseConfig config, OracleConnection existingConnection = null, OracleTransaction tran = null)
         {
-            if (config == null) return;
+            if (config == null && existingConnection == null) return;
             OracleConnection oracle = existingConnection == null
                 ? new OracleConnection(ConnectionString(config))
                 : existingConnection;
