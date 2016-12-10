@@ -185,7 +185,7 @@ namespace oradev
         public MainWindow()
         {
             InitializeComponent();
-            Console.Log("C+ Oracle Developer startup");
+            Console.Log("SSH Oracle Developer startup");
             Console.Log("Original code by Sergey Shakshin");
             this.WindowState = WindowState.Maximized;
 
@@ -360,13 +360,7 @@ namespace oradev
             wnd.ShowDialog();
         }
 
-        private void tags_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            if (tags.SelectedItem != null && _tabs.SelectedItem != null)
-            {
-                ((_tabs.SelectedItem as CustomTab).Content as SQLEdit).GoToLine((tags.SelectedItem as SourceCodeTag).Line);
-            }
-        }
+        
 
         private void MenuNew_Click(object sender, RoutedEventArgs e)
         {
@@ -530,6 +524,7 @@ namespace oradev
             {
                 (tab.Content as SQLEdit).StopThread();
             }
+            (App.Current as App).Shutdown();
         }
 
         private void MenuExecSelected_Click(object sender, RoutedEventArgs e)
@@ -549,7 +544,7 @@ namespace oradev
                 if (_tabs.SelectedItem != null)
                 {
                     ((_tabs.SelectedItem as CustomTab).Content as SQLEdit).txtCode.Focus();
-                    tags.ItemsSource = (_tabs.SelectedItem as CustomTab).Tags;
+                    
                     (_tabs.SelectedItem as CustomTab).UnMark();
                 }
             }));            

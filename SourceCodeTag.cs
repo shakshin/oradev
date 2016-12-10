@@ -37,14 +37,14 @@ namespace oradev
 
 
 
-        public int Line
+        public int Offset
         {
-            get { return (int)GetValue(LineProperty); }
-            set { SetValue(LineProperty, value); }
+            get { return (int)GetValue(OffsetProperty); }
+            set { SetValue(OffsetProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Line.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty LineProperty =
+        public static readonly DependencyProperty OffsetProperty =
             DependencyProperty.Register("Line", typeof(int), typeof(SourceCodeTag), new PropertyMetadata(0));
 
         

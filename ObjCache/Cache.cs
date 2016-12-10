@@ -1,4 +1,5 @@
-﻿using System;
+﻿using oradev.Parser;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -179,72 +180,35 @@ namespace oradev.ObjCache
             CachePackage _package = GetCachePackage(package, _conn);
 
             int cnt = 0;
-            foreach (Match match in Regex.Matches(text, @"(function|procedure)\s+(\w+)\s*([^;]*);", RegexOptions.IgnoreCase))
-            {
-                if (cnt == 0)
-                {
-                    _package.TimeStamp = DateTime.Now;
-                    _package.Members.Clear();
-                }
-                CacheMember method = new CacheMember()
-                {
-                    Type = match.Groups[1].Value,
-                    Name = match.Groups[2].Value,
-                    Prototype = match.Groups[3].Value
-                };
-                _package.Members.Add(method);
-                cnt++;
-            }
 
-            try
-            {
-                String tempFile = Path.GetTempFileName() + ".sql";
-                StreamWriter stream = new StreamWriter(tempFile, false, Encoding.UTF8);
-                stream.Write(text);
-                stream.Close();
-
-
-                ProcessStartInfo cmd = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ctags.exe"));
-                cmd.CreateNoWindow = true;
-                cmd.UseShellExecute = false;
-                cmd.RedirectStandardOutput = true;
-                cmd.Arguments = "-n --format=2 --fields=+K -f " + tempFile + ".tags " + tempFile;
-
-                Process proc = Process.Start(cmd);
-                proc.WaitForExit();
-
-                StreamReader reader = new StreamReader(tempFile + ".tags", Encoding.UTF8);
-                String _tags = reader.ReadToEnd();
-                reader.Close();
-
-                File.Delete(tempFile);
-                File.Delete(tempFile + ".tags");
-
-                foreach (String line in Regex.Split(_tags, "\r\n"))
-                {
-                    if (!String.IsNullOrEmpty(line) && line.Substring(0, 1) != "!")
+            Parser.Parser parser = new Parser.Parser(text);
+            Parser.StructureParser sparser = new Parser.StructureParser(parser.GetLexemes());
+            if (sparser.GetStructure().Children.Count > 0)
+                if (sparser.GetStructure().Children[0].Type == Parser.StructureElement.ElementType.Package)
+                    foreach (StructureElement elem in sparser.GetStructure().Children[0].Children)
                     {
-                        String[] elements = Regex.Split(line, "\t");
-                        if (elements[3] == "type" || elements[3] == "variable" || elements[3] == "cursor")
+                        if (cnt == 0)
                         {
-                            if (cnt == 0)
-                            {
-                                _package.TimeStamp = DateTime.Now;
-                                _package.Members.Clear();
-                            }
-                            CacheMember member = new CacheMember();
-                            member.Type = elements[3];
-                            member.Name = elements[0];
-                            member.Prototype = String.Empty;
-                            _package.Members.Add(member);
-                            cnt++;
+                            _package.TimeStamp = DateTime.Now;
+                            _package.Members.Clear();
                         }
+                        string prot = string.Empty;
+                        int i = 2;
+                        while (i < elem.Expression.Lexemes.Count)
+                        {
+                            if (prot != string.Empty) prot += "";
+                            prot += elem.Expression.Lexemes[i];
+                            i++;
+                        }
+                        CacheMember method = new CacheMember()
+                        {
+                            Type = elem.Type.ToString(),
+                            Name = elem.Identifier,
+                            Prototype = prot
+                        };
+                        _package.Members.Add(method);
+                        cnt++;
                     }
-                }
-            } catch (Exception)
-            {
-
-            }
 
             InvokeCallback(callback, _package);
             SaveToFile();

@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("C+ Oracle Developer")]
+[assembly: AssemblyTitle("SSH Oracle Developer")]
 [assembly: AssemblyDescription("IDE for PL/SQL developers")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Compass Plus Ltd.")]
-[assembly: AssemblyProduct("C+ Oracle Developer")]
-[assembly: AssemblyCopyright("Copyright © Compass Plus Ltd. 2015")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("SSH Oracle Developer")]
+[assembly: AssemblyCopyright("Copyright © Sergey V. Shakshin")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

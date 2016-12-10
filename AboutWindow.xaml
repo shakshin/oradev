@@ -5,7 +5,7 @@
     <StackPanel Margin="5">
         <StackPanel Orientation="Horizontal">
             <Image Source="icon.ico" Margin="10"/>            
-            <TextBlock FontSize="20" FontWeight="Bold" Margin="10">C+ Oracle Developer</TextBlock>
+            <TextBlock FontSize="20" FontWeight="Bold" Margin="10">SSH Oracle Developer</TextBlock>
         </StackPanel>
         <TextBlock>
             Original code by Sergey V. Shakshin

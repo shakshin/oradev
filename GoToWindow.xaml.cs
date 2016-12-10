@@ -31,7 +31,7 @@ namespace oradev
             try
             {
                 int _line = int.Parse(line.Text);
-                (((this.Owner as MainWindow)._tabs.SelectedItem as CustomTab).Content as SQLEdit).GoToLine(_line);
+                (((this.Owner as MainWindow)._tabs.SelectedItem as CustomTab).Content as SQLEdit).GoToOffset(_line);
                 this.Close();
             }
             catch (Exception )

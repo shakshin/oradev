@@ -1,4 +1,5 @@
-﻿using System;
+﻿using oradev.Parser;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -63,7 +64,7 @@ namespace oradev
 
 
 
-        
+        private List<StructureElement> elements = new List<StructureElement>();
 
         private void TagsRescan()
         {
@@ -71,52 +72,32 @@ namespace oradev
             {
                 Tags.Clear();
             }
-            try
-            {
-                String code = (this.Content as SQLEdit).GetCodeText();
+            String code = (this.Content as SQLEdit).GetCodeText();
+            Parser.Parser parser = new Parser.Parser(code);
+            StructureParser sparser = new StructureParser(parser.GetLexemes());
+            (Content as SQLEdit).cbTags.Refresh(sparser.GetStructure());
 
-
-                String tempFile = Path.GetTempFileName() + ".sql";
-                StreamWriter stream = new StreamWriter(tempFile, false, Encoding.UTF8);
-                stream.Write(code);
-                stream.Close();
-
-                ProcessStartInfo cmd = new ProcessStartInfo(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ctags.exe"));
-                cmd.CreateNoWindow = true;
-                cmd.UseShellExecute = false;
-                cmd.RedirectStandardOutput = true;
-                cmd.Arguments = "-n --format=2 --fields=+K -f " + tempFile + ".tags " + tempFile;
-
-                Process proc = Process.Start(cmd);
-                proc.WaitForExit();
-
-                StreamReader reader = new StreamReader(tempFile + ".tags", Encoding.UTF8);
-                String _tags = reader.ReadToEnd();
-                reader.Close();
-
-                File.Delete(tempFile);
-                File.Delete(tempFile + ".tags");
-
-                foreach (String line in Regex.Split(_tags, "\r\n"))
-                {
-                    if (!String.IsNullOrEmpty(line) && line.Substring(0, 1) != "!")
+            if (sparser.GetStructure().Children.Count > 0)
+                if (sparser.GetStructure().Children[0].Type == Parser.StructureElement.ElementType.Package ||
+                    sparser.GetStructure().Children[0].Type == Parser.StructureElement.ElementType.PackageBody)
+                    foreach (StructureElement elem in sparser.GetStructure().Children[0].Children)
                     {
-                        String[] elements = Regex.Split(line, "\t");
-                        if (elements[3] == "function" || elements[3] == "procedure" || elements[3] == "cursor")
-                        {
-                            SourceCodeTag tag = new SourceCodeTag();
-                            tag.Name = elements[0];
-                            tag.Type = elements[3];
-                            tag.Line = int.Parse(elements[2].Replace(";\"", ""));
-                            Tags.Add(tag);
-                        }
+                        SourceCodeTag tag = new SourceCodeTag();
+                        tag.Name = elem.Identifier;
+                        tag.Type = elem.Type.ToString();
+                        tag.Offset = elem.Expression.Lexemes[0].Offset;
+                        Tags.Add(tag);
                     }
-                }
-            }
-            catch (Exception ) { 
+            elements.Clear();
+            FillElements(sparser.GetStructure());
+            (Content as SQLEdit).SetTags(elements);
+        }
 
-            }
-            
+        private void FillElements(StructureElement el)
+        {
+            elements.Add(el);
+            foreach (StructureElement e in el.Children)
+                FillElements(e);
         }
 
         public CustomTab(DataBaseConfig db)

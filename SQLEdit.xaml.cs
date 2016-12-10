@@ -5,6 +5,7 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
+using oradev.Parser;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -64,6 +65,27 @@ namespace oradev
         private Point MousePosition;
 
         private List<string> keywords = new List<string>();
+
+        private List<StructureElement> tags = new List<StructureElement>();
+
+        public void SetTags(List<StructureElement> tgs)
+        {
+            tags = tgs;
+        }
+
+        public void ActualizePosition()
+        {
+            if (tags.Count < 1) return;
+            int offset = txtCode.CaretOffset + 1;
+            StructureElement cur = tags[0];
+            foreach (StructureElement e in tags)
+            {
+                if (e.GetOffset() >= cur.GetOffset() && e.GetOffset() < offset)
+                    cur = e;
+            }
+            cbTags.SetCurrent(cur);
+            txtCode.Focus();
+        }
 
         public bool Pending
         {
@@ -237,8 +259,11 @@ namespace oradev
                 
             }
 
-            
-            
+
+            txtCode.TextArea.KeyUp += delegate (object sender, KeyEventArgs e)
+            {
+                ActualizePosition();
+            };
 
             txtCode.Options.ConvertTabsToSpaces = true;
             txtCode.Options.IndentationSize = 2;
@@ -327,7 +352,17 @@ namespace oradev
                 }
             };
 
+           
             txtCode.TextArea.TextView.MouseDown += delegate (object sender, MouseButtonEventArgs e) {
+                System.Timers.Timer tmr = new System.Timers.Timer();
+                tmr.Elapsed += delegate (object sndr, ElapsedEventArgs ea) {
+                    tmr.Stop();
+                    Dispatcher.Invoke((Action)delegate () { ActualizePosition(); });
+                    
+                };
+                tmr.Interval = 500;
+                tmr.Start();
+
                 if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
                 {
                     DBObject obj = GetObjectUnderCursor();
@@ -349,8 +384,8 @@ namespace oradev
                 }
             };
 
-            
 
+            
 
             textMarkerService = new TextMarkerService(txtCode.Document);
             txtCode.TextArea.TextView.BackgroundRenderers.Add((IBackgroundRenderer)textMarkerService);
@@ -359,7 +394,7 @@ namespace oradev
             if (services != null)
                 services.AddService(typeof(ITextMarkerService), textMarkerService);
 
-
+            
             
         }
 
@@ -634,7 +669,7 @@ namespace oradev
         {
             if (Pending) return;
 
-            Match match = Regex.Match(txtCode.Text, @"create\s+or\s+replace\s+(package)(\s+body)?\s+(\S+)\s+as", RegexOptions.IgnoreCase);
+            Match match = Regex.Match(txtCode.Text, @"create\s+or\s+replace\s+(package)(\s+body)?\s+(\S+)\s+(as|is)", RegexOptions.IgnoreCase);
 
             if (txtCode.SelectedText.Trim().Length == 0)
             {
@@ -688,10 +723,10 @@ namespace oradev
             }
         }
 
-        public void GoToLine(int line) 
+        public void GoToOffset(int offset) 
         {
-            txtCode.ScrollTo(line, 1);
-            txtCode.TextArea.Caret.Line = line;
+            txtCode.TextArea.Caret.Offset = offset;
+            txtCode.ScrollTo(txtCode.TextArea.Caret.Line, txtCode.TextArea.Caret.Column);
             txtCode.Focus();
         }
 
@@ -699,7 +734,7 @@ namespace oradev
         {
             if (lstErrors.SelectedItem != null)
             {
-                GoToLine((lstErrors.SelectedItem as SourceError).LineNumber);
+                GoToOffset((lstErrors.SelectedItem as SourceError).LineNumber);
             }
         }
 
@@ -1323,6 +1358,14 @@ namespace oradev
         private void Rollback_Click(object sender, RoutedEventArgs e)
         {
             thread.Rollback();
+        }
+
+        private void cbTags_SelectedNode(object sender, EventArgs e)
+        {
+            StructureElement el = cbTags.GetSelected();
+            if (el != null)
+                GoToOffset(el.GetOffset());
+            ActualizePosition();
         }
     }
 }

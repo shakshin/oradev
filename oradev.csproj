@@ -75,9 +75,11 @@
       <DependentUpon>AllSessions.xaml</DependentUpon>
     </Compile>
     <Compile Include="DBThread.cs" />
+    <Compile Include="Parser\Expression.cs" />
     <Compile Include="Folding.cs" />
     <Compile Include="ICSharpCode\ITextMarker.cs" />
     <Compile Include="ICSharpCode\TextMarkerService.cs" />
+    <Compile Include="Parser\Lexeme.cs" />
     <Compile Include="ObjCache\CacheConnection.cs" />
     <Compile Include="ObjCache\Cache.cs" />
     <Compile Include="ObjCache\CacheMethod.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="NewFilesEventArgs.cs" />
     <Compile Include="ObjCache\CacheTask.cs" />
     <Compile Include="Oracle.cs" />
+    <Compile Include="Parser\Parser.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -117,7 +120,12 @@
     <Compile Include="SQLEdit.xaml.cs">
       <DependentUpon>SQLEdit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Parser\StructureElement.cs" />
+    <Compile Include="Parser\StructureParser.cs" />
     <Compile Include="TextMacro.cs" />
+    <Compile Include="TreeCombo.xaml.cs">
+      <DependentUpon>TreeCombo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Unwrap.cs" />
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
@@ -168,6 +176,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="TreeCombo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -208,9 +220,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="keywords.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="ctags.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

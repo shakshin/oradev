@@ -33,11 +33,7 @@ namespace oradev
                 this.Exit += delegate { SingleInstanceEnforcer.Cleanup(); };
                 this.StartupUri = new Uri("MainWindow.xaml", UriKind.Relative);
 
-                Stream inp = Assembly.GetExecutingAssembly().GetManifestResourceStream("oradev.ctags.exe");
-                byte[] bytes = new byte[(int)inp.Length];
-                inp.Read(bytes, 0, bytes.Length);
-                File.WriteAllBytes(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ctags.exe"), bytes);
-                inp.Close();
+                
                 
             }   
             // second instance
