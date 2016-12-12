@@ -71,6 +71,7 @@ namespace oradev
         public void SetTags(List<StructureElement> tgs)
         {
             tags = tgs;
+            ActualizePosition();
         }
 
         public void ActualizePosition()
@@ -294,17 +295,7 @@ namespace oradev
                 DBObject obj = GetObjectUnderCursor();    
                 if (obj != null)
                 {
-                    /* if (ObjectTooltip == null)
-                    {
-                        ObjectTooltip = new ToolTip();
-                        ObjectTooltip.PlacementTarget = txtCode.TextArea;
-                        ObjectTooltip.Content = GetObjDescriptionContent(obj);
-                        ObjectTooltip.IsOpen = true;
-                    }
-                    else
-                    {
-                        ObjectTooltip.Content = GetObjDescriptionContent(obj);
-                    } */
+                    
                     if (link != null && objOffset != link.StartOffset)
                     {
                         textMarkerService.Remove(link);
@@ -324,11 +315,7 @@ namespace oradev
                 }
                 else
                 {
-                    /* if (ObjectTooltip != null)
-                    {
-                        ObjectTooltip.IsOpen = false;
-                        ObjectTooltip = null;
-                    } */
+                   
                     if (link != null)
                     {
                         textMarkerService.Remove(link);
@@ -339,11 +326,7 @@ namespace oradev
             };
 
             txtCode.TextArea.MouseLeave += delegate (object sender, MouseEventArgs e) {
-                /* if (ObjectTooltip != null)
-                {
-                    ObjectTooltip.IsOpen = false;
-                    ObjectTooltip = null;
-                } */
+                
                 if (link != null)
                 {
                     textMarkerService.Remove(link);
@@ -394,8 +377,8 @@ namespace oradev
             if (services != null)
                 services.AddService(typeof(ITextMarkerService), textMarkerService);
 
-            
-            
+
+            ActualizePosition();
         }
 
         private void TextArea_MouseUp(object sender, MouseButtonEventArgs e)
@@ -472,6 +455,7 @@ namespace oradev
             {
                 Unwrap();
             }
+            ActualizePosition();
         }
 
         public void Unwrap()
@@ -520,7 +504,7 @@ namespace oradev
                 }
                 _modified = txtCode.IsModified;
             }
-            
+            ActualizePosition();
         }
 
         public void LoadPackage(String packageName)
@@ -539,6 +523,7 @@ namespace oradev
                 }
                 _modified = txtCode.IsModified;
             }
+            ActualizePosition();
         }
         public void LoadPackageHead(String packageName)
         {
@@ -556,6 +541,7 @@ namespace oradev
                 }
                 _modified = txtCode.IsModified;
             }
+            ActualizePosition();
         }
 
         public void Compile()
@@ -1366,6 +1352,17 @@ namespace oradev
             if (el != null)
                 GoToOffset(el.GetOffset());
             ActualizePosition();
+            
+            
+            System.Timers.Timer t = new System.Timers.Timer();
+            t.Interval = 200;
+            t.Elapsed += delegate (object sender2, ElapsedEventArgs e2) {
+                t.Stop();
+                Dispatcher.Invoke((Action) delegate { txtCode.Focus(); });
+            };
+            t.Start();
+            
+
         }
     }
 }

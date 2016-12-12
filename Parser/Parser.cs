@@ -87,10 +87,28 @@ namespace oradev.Parser
         
         private void CheckCode()
         {
-            if (Regex.IsMatch(_char.ToString(), @"(\n|\s|\r)"))
+            if (Regex.IsMatch(_char.ToString(), @"(\n|\s|\r|\t)"))
             {
                 BufferToLexeme(false);
             }
+            else if (_char == ':')
+            {
+                BufferToLexeme(false);
+                _offset = _index;
+                _buffer += _char;
+                if (_source.Length > _index + 1)
+                    if (_source[_index + 1] == '=')
+                    {
+                        _buffer += _source[_index + 1];
+                        _index++;
+                    }
+                BufferToLexeme(false);
+            }
+            else if (_char == '=' && _buffer == ":")
+            {
+                BufferToLexeme(true);
+            }
+            
             else if (Regex.IsMatch(_char.ToString(), @"\d") && _buffer == string.Empty)
             {
                 _buffer += _char;
@@ -104,7 +122,20 @@ namespace oradev.Parser
                 _state = State.Comment;
                 _offset = _index;
             }
-            else if (_char == '\'' )
+            else if (Regex.IsMatch(_char.ToString(), @"(\=|\-|\+|\/|\\|\*|\(|\)|\|)"))
+            {
+                BufferToLexeme(false);
+                _buffer += _char;
+                _offset = _index;
+                if (_char == '|' && _source.Length > _index + 1)
+                    if (_source[_index+1] == '|')
+                    {
+                        _buffer += _char;
+                        _index++;
+                    }
+                BufferToLexeme(false);
+            }
+            else if (_char == '\'')
             {
                 BufferToLexeme(false);
                 _state = State.String;
@@ -196,6 +227,7 @@ namespace oradev.Parser
             else
             {
                 _buffer += _char;
+                if (_char == '\'') _index++;
             }
         }
 

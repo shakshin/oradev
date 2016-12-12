@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="300" LostFocus="UserControl_LostFocus">
     <Grid>
-        <Button Name="btnMain" Content="Document" Click="btnMain_Click"/>
+        <Button Name="btnMain" Click="btnMain_Click"/>
         <Popup Name="selector" PlacementTarget="{Binding btnMain}" Height="200" Width="400" >
             <TreeView Name="tree" Width="400" SelectedItemChanged="tree_SelectedItemChanged">
                 
