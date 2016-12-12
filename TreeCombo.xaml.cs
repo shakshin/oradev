@@ -32,6 +32,18 @@ namespace oradev
         {
             selector.IsOpen = !selector.IsOpen;
             active = selector.IsOpen;
+            if (selector.IsOpen)
+            {
+                foreach (TreeViewItem i in tree.Items)
+                    ExpandItem(i);
+            }
+        }
+
+        private void ExpandItem(TreeViewItem item)
+        {
+            item.IsExpanded = true;
+            foreach (TreeViewItem i in item.Items)
+                ExpandItem(i);
         }
 
         private void UserControl_LostFocus(object sender, RoutedEventArgs e)

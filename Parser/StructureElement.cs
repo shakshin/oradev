@@ -27,5 +27,12 @@ namespace oradev.Parser
                     return Expression.Lexemes[0].Offset;
             return 0;
         }
+
+        public void Reorder()
+        {
+            Children = Children.OrderBy(o => o.Identifier).ToList();
+            foreach (StructureElement e in Children)
+                e.Reorder();
+        }
     }
 }

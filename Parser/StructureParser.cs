@@ -46,7 +46,10 @@ namespace oradev.Parser
             while (_index < _source.Count)
                 _expressions.Add(GetExpression(true));
             ParseDocument();
+            _doc.Reorder();
+
         }
+
 
         private bool IsEndOfExpression(Lexeme lex, List<Lexeme> lexemes)
         {
