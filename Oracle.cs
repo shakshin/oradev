@@ -25,6 +25,50 @@ namespace oradev
             return new OracleConnection(ConnectionString(config));
         }
 
+        public static void DBMSOutput(OracleConnection conn, OracleTransaction tran)
+        {
+            OracleCommand cmd = new OracleCommand();
+            cmd.Connection = conn;
+            cmd.CommandType = CommandType.Text;
+            cmd.Transaction = tran;
+            cmd.CommandText = "BEGIN DBMS_OUTPUT.GET_LINE(:str, :status); END;";
+            cmd.Parameters.Clear();
+            cmd.Parameters.Add(new OracleParameter() {
+                DbType = DbType.String,
+                Direction = ParameterDirection.Output,
+                OracleType = OracleType.Clob,
+                ParameterName = "str",
+                Size = 32000,
+                Value = ""
+            });
+                
+            cmd.Parameters.Add("status", OracleType.Number, 38, "STATUS");
+            
+            cmd.Parameters[0].Direction = ParameterDirection.Output;
+            cmd.Parameters[1].Direction = ParameterDirection.Output;
+            
+            
+            string str = string.Empty;
+            int status = 0;
+            while (status == 0)
+            {
+                cmd.ExecuteNonQuery();
+                Type t = cmd.Parameters[0].Value.GetType();
+                Object obj = cmd.Parameters["str"].Value;
+                OracleLob clob;
+                if (!(obj is DBNull))
+                    clob = (OracleLob)cmd.Parameters["str"].Value;
+                else
+                    clob = null;
+                if (clob != null)
+                    str = clob.Value.ToString();
+                else
+                    str = string.Empty;
+                status = int.Parse(cmd.Parameters[1].Value.ToString());
+                if (str != string.Empty) Console.Log("DBMS OUTPUT: " + str);
+            }
+        }
+
         public static void QueryAsync(String text, ProcessQueryResult callback, DataBaseConfig config, OracleConnection existingConnection = null)
         {
             if (config == null)
@@ -138,6 +182,7 @@ namespace oradev
             {
                 if (existingConnection == null) oracle.Dispose();
             }
+            DBMSOutput(oracle, tran);
             return result;
         }
 
@@ -466,6 +511,7 @@ FROM USER_OBJECTS O1 WHERE OBJECT_TYPE = 'PACKAGE' AND OBJECT_NAME LIKE '{0}%' O
                     {
                         Console.Log(string.Format("{0} rows affected.", rows));
                     }
+                    DBMSOutput(oracle, tran);
                 }
 
             }
