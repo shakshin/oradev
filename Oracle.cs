@@ -27,6 +27,7 @@ namespace oradev
 
         public static void DBMSOutput(OracleConnection conn, OracleTransaction tran)
         {
+            if (conn.State != ConnectionState.Open) return;
             OracleCommand cmd = new OracleCommand();
             cmd.Connection = conn;
             cmd.CommandType = CommandType.Text;
@@ -151,6 +152,10 @@ namespace oradev
                                             DateTime dt = reader.GetDateTime(i);
                                             row[result.Columns[i]] = dt.ToString();
                                             break;
+                                        case "Byte[]":
+                                            byte[] b = (byte[]) reader.GetValue(i);
+                                            row[result.Columns[i]] = System.Text.UTF8Encoding.UTF8.GetString(b);
+                                            break;
                                         default:
                                             row[result.Columns[i]] = "{" + type.Name + "}";
                                             break;
@@ -158,7 +163,7 @@ namespace oradev
                                 }
                                 else
                                 {
-                                    row[result.Columns[i]] = "{null}";
+                                    row[result.Columns[i]] = "{{{null}}}";
                                 }
                             }
 

@@ -84,6 +84,7 @@ namespace oradev
             timer.Elapsed += delegate (object sender, ElapsedEventArgs e)
             {
                 RecacheCounter++;
+                if (App.Current == null) return;
                 if (RecacheCounter >= (App.Current as App).Configuration.CacheExpirePeriod)
                     ReCache();
             };

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:oradev"
         Title="SSH Oracle Developer" Height="350" Width="525" KeyUp="Window_KeyUp" Closing="Window_Closing"
-         AllowDrop="True"  Drop="Window_Drop" Name="This">
+         AllowDrop="True"  Drop="Window_Drop" Name="This" Deactivated="This_Deactivated">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="AliceBlue" x:Name="sda"/>

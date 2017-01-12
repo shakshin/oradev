@@ -26,6 +26,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
@@ -682,12 +683,28 @@ namespace oradev
 
                     lstOutput.Columns.Clear();
 
+                    int i = 0;
+
+                    foreach (DataColumn c in result.Columns)
+                    {
+                        string tpl = @"<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:local=""clr-namespace:oradev;assembly=oradev"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Key=""gridcell""><local:CustomCell Text=""{Binding Path=Item[" + i + @"]}"" /></DataTemplate>";
+                        i++;
+                        lstOutput.Columns.Add(new DataGridTemplateColumn()
+                        {
+                            Header = c.Caption,
+                            MinWidth = 100,
+                            MaxWidth = 550,
+                            CellTemplate = XamlReader.Load(new MemoryStream((new ASCIIEncoding()).GetBytes(tpl))) as DataTemplate
+                        });
+                    }
+
+                    lstOutput.DataContext = result;
+
+                    
+
                     if (result.Columns.Count > 0 && result.Rows.Count > 0)
                     {
-                        lstOutput.DataContext = result;
-
                         Console.Log(result.Rows.Count + " rows selected");
-
                         tabOutput.SelectedIndex = 1;
                     }
                     else
@@ -966,9 +983,25 @@ namespace oradev
 
                 lstOutput.Columns.Clear();
 
+                int i = 0;
+
+                foreach (DataColumn c in result.Columns)
+                {
+                    string tpl = @"<DataTemplate xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:local=""clr-namespace:oradev;assembly=oradev"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" x:Key=""gridcell""><local:CustomCell Text=""{Binding Path=Item[" + i + @"]}"" /></DataTemplate>";
+                    i++;
+                    lstOutput.Columns.Add(new DataGridTemplateColumn()
+                    {
+                        Header = c.Caption,
+                        MinWidth = 100,
+                        MaxWidth = 550,
+                        CellTemplate = XamlReader.Load(new MemoryStream((new ASCIIEncoding()).GetBytes(tpl))) as DataTemplate
+                    });
+                }
+
+                lstOutput.DataContext = result;
+
                 if (result.Columns.Count > 0 && result.Rows.Count > 0)
                 {
-                    lstOutput.DataContext = result;
                     tabOutput.SelectedIndex = 1;
                 }
                 else

@@ -74,6 +74,9 @@
     <Compile Include="AllSessions.xaml.cs">
       <DependentUpon>AllSessions.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomCell.xaml.cs">
+      <DependentUpon>CustomCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DBThread.cs" />
     <Compile Include="Parser\Expression.cs" />
     <Compile Include="Folding.cs" />
@@ -127,11 +130,18 @@
       <DependentUpon>TreeCombo.xaml</DependentUpon>
     </Compile>
     <Compile Include="Unwrap.cs" />
+    <Compile Include="ValueView.xaml.cs">
+      <DependentUpon>ValueView.xaml</DependentUpon>
+    </Compile>
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AllSessions.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CustomCell.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,6 +187,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="TreeCombo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ValueView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

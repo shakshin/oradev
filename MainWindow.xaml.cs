@@ -662,5 +662,11 @@ namespace oradev
         {
             ObjectsSearch();
         }
+
+        private void This_Deactivated(object sender, EventArgs e)
+        {
+            foreach (CustomTab t in tabs)
+                (t.Content as SQLEdit).cbTags.selector.IsOpen = false;
+        }
     }
 }

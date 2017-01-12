@@ -91,7 +91,7 @@
             </TabItem>
             <TabItem Header="Query results">
                 <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                    <DataGrid Sorting="lstOutput_Sorting" IsReadOnly="True"  Name="lstOutput" ItemsSource="{Binding}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+                    <DataGrid Sorting="lstOutput_Sorting" IsReadOnly="True"  Name="lstOutput" ItemsSource="{Binding}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" AutoGenerateColumns="False">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Copy all" Click="MenuCopyAll_Click"/>
