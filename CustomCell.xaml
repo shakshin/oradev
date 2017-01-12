@@ -13,6 +13,6 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Column="0" x:Name="txtContent" />
-        <Button Content="..." Grid.Column="1" Name="btnDetails" Width="20" Margin="1,1,1,1" Click="btnDetails_Click" ToolTip="View original value"/>
+        <TextBlock Name="btnDetails" Text="…" Background="#FFF0F0F0" Width="20" Grid.Column="1" Margin="1,1,1,1" Mouse.MouseUp="btnDetails_MouseUp" ToolTip="View original value" Cursor="Hand" TextAlignment="Center" />
     </Grid>
 </UserControl>

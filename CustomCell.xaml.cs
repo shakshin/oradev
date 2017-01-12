@@ -40,7 +40,8 @@ namespace oradev
                 }
                 else
                 {
-                    (d as CustomCell).txtContent.Text = Regex.Replace(e.NewValue as string, @"[^\u0000-\u007F]+", "");
+                    (d as CustomCell).txtContent.Text = Regex.Replace(Regex.Replace(e.NewValue as string, @"[^\u0000-\u007F]+", ""), @"[\r\n]", "");
+
                     if ((d as CustomCell).txtContent.Text != e.NewValue as string)
                     {
                         (d as CustomCell).txtContent.Text = "{complex value}";
@@ -72,6 +73,13 @@ namespace oradev
         
 
         private void btnDetails_Click(object sender, RoutedEventArgs e)
+        {
+            ValueView w = new ValueView(Text);
+            w.Owner = (App.Current as App).MainWindow;
+            w.Show();
+        }
+
+        private void btnDetails_MouseUp(object sender, MouseButtonEventArgs e)
         {
             ValueView w = new ValueView(Text);
             w.Owner = (App.Current as App).MainWindow;

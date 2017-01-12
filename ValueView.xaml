@@ -9,6 +9,6 @@
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         Deactivated="Window_Deactivated"
-        Title="Value View" Height="200" Width="300" KeyUp="Window_KeyUp">
-    <TextBox Name="txtView" IsReadOnly="True" TextWrapping="Wrap" />
+        Title="Value View" Height="400" Width="600" KeyUp="Window_KeyUp">
+    <TextBox Name="txtView" IsReadOnly="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
 </Window>
